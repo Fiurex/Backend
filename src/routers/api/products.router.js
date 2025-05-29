@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { productsManager } from "../../data/managers/mongo/manager.mongo.js";
+import passport from "passport";
+import authRouter from "./auth.router.js"
 
 const productsRouter = Router();
 
@@ -79,10 +81,10 @@ const destroyById = async (req, res, next) => {
   }
 };
 
-productsRouter.post("/", create);
+productsRouter.post("/", passport.authenticate("admin", authRouter.optsForbidden), create);
 productsRouter.get("/", readAll);
 productsRouter.get("/:id", readById);
-productsRouter.put("/:id", updateById);
-productsRouter.delete("/:id", destroyById);
+productsRouter.put("/:id", passport.authenticate("admin", authRouter.optsForbidden), updateById);
+productsRouter.delete("/:id", passport.authenticate("admin", authRouter.optsForbidden), destroyById);
 
 export default productsRouter;

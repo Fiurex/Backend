@@ -7,6 +7,9 @@ import pathHandler from "./src/middlewares/pathHandler.mid.js";
 import errorHandler from "./src/middlewares/errorHandler.mid.js";
 import indexRouter from "./src/routers/index.router.js";
 import dbConnect from "./src/helpers/dbConnect.helper.js";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 
 //Server settings
 const server = express();
@@ -23,11 +26,25 @@ server.set("view engine", "handlebars");
 server.set("views", __dirname + "/src/views");
 
 //Middlewares settings
-
+server.use(cookieParser(process.env.SECRET));
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.static("public"));
 server.use(morgan("dev"));
+
+/* Sessions settings*/
+server.use(
+  session({
+    secret: process.env.SECRET,
+    resave: true,
+    saveUninitialized: true,
+    cookies: { maxAge: 7 * 24 * 60 * 60 * 1000 },
+    store: new MongoStore({
+      mongoUrl: process.env.LINK_DB,
+      collectionName: "sessions",
+    }),
+  })
+);
 
 //Router settings
 server.use("/", indexRouter);

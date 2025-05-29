@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro - E-commerce</title>
+</head>
+<body style="margin: 0; background-color: #121212; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #e0e0e0;">
+
+  <main style="max-width: 420px; margin: 60px auto; padding: 40px 30px; background-color: #1e1e1e; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+    <h2 style="text-align: center; color: #90caf9; margin-bottom: 24px;">Crear cuenta</h2>
+
+    <form action="/api/auth/register" method="POST" style="display: flex; flex-direction: column; gap: 16px;">
+      <label style="display: flex; flex-direction: column; font-weight: 500;">
+        Nombre:
+        <input type="text" name="first_name" placeholder="Ej: Juan" required
+               style="padding: 10px; border: 1px solid #333; border-radius: 8px; background-color: #2a2a2a; color: #f0f0f0;"/>
+      </label>
+
+      <label style="display: flex; flex-direction: column; font-weight: 500;">
+        Apellido:
+        <input type="text" name="last_name" placeholder="Ej: Pérez" required
+               style="padding: 10px; border: 1px solid #333; border-radius: 8px; background-color: #2a2a2a; color: #f0f0f0;"/>
+      </label>
+
+      <label style="display: flex; flex-direction: column; font-weight: 500;">
+        Edad:
+        <input type="number" name="age" placeholder="Ej: 30" min="1" required
+               style="padding: 10px; border: 1px solid #333; border-radius: 8px; background-color: #2a2a2a; color: #f0f0f0;"/>
+      </label>
+
+      <label style="display: flex; flex-direction: column; font-weight: 500;">
+        Email:
+        <input type="email" name="email" placeholder="Ej: ejemplo@correo.com" required
+               style="padding: 10px; border: 1px solid #333; border-radius: 8px; background-color: #2a2a2a; color: #f0f0f0;"/>
+      </label>
+
+      <label style="display: flex; flex-direction: column; font-weight: 500;">
+        Contraseña:
+        <input type="password" name="password" placeholder="********" required
+               style="padding: 10px; border: 1px solid #333; border-radius: 8px; background-color: #2a2a2a; color: #f0f0f0;"/>
+      </label>
+
+      <button type="submit"
+              style="padding: 12px; background-color: #2196f3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+        Registrarse
+      </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 14px;">
+      ¿Ya tienes cuenta? <a href="/login" style="color: #64b5f6; text-decoration: none;">Iniciar sesión</a>
+    </p>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+import { Router } from "express";
+import isUser from "../../middlewares/isUser.mid.js";
+import passport from "../../middlewares/passport.mid.js";
+
+const authRouter = Router();
+
+const registerCb = async (req, res, next) => {
+  try {
+    const { method, originalUrl: url } = req;
+    const { _id } = req.user;
+    return res
+      .status(201)
+      .json({ message: "Resgistered", response: _id, method, url });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const loginCb = async (req, res, next) => {
+  try {
+    const { method, originalUrl: url } = req;
+    const { _id } = req.user;
+    return res
+      .status(200)
+      .cookie("token", req.user.token, { maxAge: 7 * 24 * 60 * 60 * 1000 })
+      .json({ message: "Logged in", response: _id, method, url });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const signoutCb = (req, res, next) => {
+  try {
+    const { method, originalUrl: url } = req;
+    req.session.destroy();
+    return res.status(200).json({ message: "Signout", method, url });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const onlineCb = (req, res, next) => {
+  try {
+    const { method, originalUrl: url } = req;
+    return res
+      .status(200)
+      .json({ message: "Is Online", response: true, method, url });
+  } catch (error) {
+    next(error);
+  }
+};
+const badAuth = (req, res, next) => {
+  try {
+    const error = new Error("Bad-auth");
+    error.statusCode = 401;
+    throw error;
+  } catch (error) {
+    next(error);
+  }
+};
+
+const forbidden = (req, res, next) => {
+  try {
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
+    throw error;
+  } catch (error) {
+    next(error);
+  }
+};
+const optsBad = { session: false, failureRedirect: "api/auth/bad-auth" };
+const optsForbidden = { session: false, failureRedirect: "api/auth/forbidden" };
+authRouter.post(
+  "/register",
+  passport.authenticate("register", optsBad),
+  registerCb
+);
+authRouter.post("/login", passport.authenticate("login", optsBad), loginCb);
+authRouter.post(
+  "/signout",
+  passport.authenticate("user", optsForbidden),
+  signoutCb
+);
+authRouter.post(
+  "/online",
+  passport.authenticate("user", optsForbidden),
+  onlineCb
+);
+authRouter.get("/bad-auth", badAuth);
+authRouter.get("/forbidden", forbidden);
+authRouter.optsForbidden = optsForbidden
+
+export default authRouter;

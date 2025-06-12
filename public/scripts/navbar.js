@@ -7,6 +7,7 @@ const isOnline = async () => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     };
     const url = "/api/auth/online";
     let response = await fetch(url, opts);
@@ -14,14 +15,14 @@ const isOnline = async () => {
     console.log(response);
     if (response.error) {
       selector.innerHTML = `
-      <a class="btn btn-success py-1 px-2 m-1" href="/register">Register</a>
-      <a class="btn btn-success py-1 px-2 m-1" href="/login">Login</a>
+      <a class="btn btn-success py-1 px-2 m-1" href="/register">Registrate</a>
+      <a class="btn btn-success py-1 px-2 m-1" href="/login">Iniciar sesion</a>
     `;
     } else {
       selector.innerHTML = `
-      <a class="btn btn-success py-1 px-2 m-1" href="/profile">Profile</a>
-      <a class="btn btn-success py-1 px-2 m-1" href="/cart">Cart</a>
-      <button class="btn btn-success py-1 px-2 m-1" id="signout">Sign out</button>
+      <a class="btn btn-success py-1 px-2 m-1" href="/profile">Perfil</a>
+      <a class="btn btn-success py-1 px-2 m-1" href="/cart">Carrito</a>
+      <button class="btn btn-success py-1 px-2 m-1" id="signout">Cerrar sesion</button>
     `;
 document.querySelector("#signout").addEventListener("click", async () => {
   try {
@@ -30,6 +31,7 @@ document.querySelector("#signout").addEventListener("click", async () => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     };
     const url = "/api/auth/signout";
     await fetch(url, opts);

@@ -1,14 +1,18 @@
-<h1>Productos</h1>
+<main style="background-color: #121212; color: #f1f1f1; min-height: 100vh; padding: 40px; font-family: 'Segoe UI', sans-serif;">
+  <h1 style="text-align: center; font-size: 32px; margin-bottom: 32px;">Productos</h1>
 
-<section class="d-flex flex-wrap justify-content-evenly" >
+  <section style="display: flex; flex-wrap: wrap; justify-content: center; gap: 24px;">
     {{#each products}}
-  <div class="card m-1" style="width: 18rem;">
-    <img src={{this.image}} class="card-img-top" alt={{this._id}} style="height: 12rem" />
-    <div class="card-body">
-      <h5 class="card-title">{{this.title}}</h5>
-      <p class="card-text">USD{{this.price}}</p>
-      <a href="/details/{{this._id}}" class="btn btn-primary">+ Info</a>
-    </div>
-  </div>
-  {{/each}}
-</section>
+      <div style="background-color: #1f1f1f; width: 260px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); transition: transform 0.3s;">
+        <img src="{{this.image}}" alt="{{this._id}}" style="width: 100%; height: 180px; object-fit: cover;" />
+        <div style="padding: 16px;">
+          <h5 style="font-size: 20px; margin: 0 0 8px;">{{this.title}}</h5>
+          <p style="color: #00e676; font-weight: bold;">USD {{this.price}}</p>
+          <a href="/details/{{this._id}}" style="display: inline-block; margin-top: 12px; background-color: #00bcd4; color: #fff; padding: 10px 16px; text-decoration: none; border-radius: 8px; font-weight: 500;">
+            + Info
+          </a>
+        </div>
+      </div>
+    {{/each}}
+  </section>
+</main>

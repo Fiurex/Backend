@@ -1,23 +1,20 @@
-import { Router } from "express";
+import RouterHelper from "../../helpers/router.helper.js";
 import { productsManager } from "../../data/managers/mongo/manager.mongo.js";
 import passport from "passport";
-import authRouter from "./auth.router.js"
+import authRouter from "./auth.router.js";
 
-const productsRouter = Router();
-
-const create = async (req, res, next) => {
-  try {
+const create = async (req, res) => {
+ 
     const { method, originalUrl: url } = req;
     const data = req.body;
+    data.owner_id = req.user._id;
     const response = await productsManager.createOne(data);
     res.status(201).json({ response, method, url });
-  } catch (error) {
-    next(error);
-  }
+
 };
 
-const readAll = async (req, res, next) => {
-  try {
+const readAll = async (req, res) => {
+ 
     const { method, originalUrl: url } = req;
     const filter = req.query;
     const response = await productsManager.readAll(filter);
@@ -27,13 +24,10 @@ const readAll = async (req, res, next) => {
       throw error;
     }
     res.status(200).json({ response, method, url });
-  } catch (error) {
-    next(error);
-  }
 };
 
-const readById = async (req, res, next) => {
-  try {
+const readById = async (req, res) => {
+
     const { method, originalUrl: url } = req;
     const { id } = req.params;
     const response = await productsManager.readById(id);
@@ -43,13 +37,10 @@ const readById = async (req, res, next) => {
       throw error;
     }
     res.status(200).json({ response, method, url });
-  } catch (error) {
-    next(error);
-  }
 };
 
-const updateById = async (req, res, next) => {
-  try {
+const updateById = async (req, res) => {
+
     const { method, originalUrl: url } = req;
     const { id } = req.params;
     const data = req.body;
@@ -60,13 +51,10 @@ const updateById = async (req, res, next) => {
       throw error;
     }
     res.status(200).json({ response, method, url });
-  } catch (error) {
-    next(error);
-  }
+  
 };
 
-const destroyById = async (req, res, next) => {
-  try {
+const destroyById = async (req, res) => {
     const { method, originalUrl: url } = req;
     const { id } = req.params;
     const response = await productsManager.destroyById(id);
@@ -76,15 +64,34 @@ const destroyById = async (req, res, next) => {
       throw error;
     }
     res.status(200).json({ response, method, url });
-  } catch (error) {
-    next(error);
-  }
+
 };
 
-productsRouter.post("/", passport.authenticate("admin", authRouter.optsForbidden), create);
-productsRouter.get("/", readAll);
-productsRouter.get("/:id", readById);
-productsRouter.put("/:id", passport.authenticate("admin", authRouter.optsForbidden), updateById);
-productsRouter.delete("/:id", passport.authenticate("admin", authRouter.optsForbidden), destroyById);
+class ProductsRouter extends RouterHelper {
+  constructor() {
+    super();
+    this.init();
+  }
+  init = () => {
+    this.create(
+      "/",
+      passport.authenticate("admin", authRouter.optsForbidden),
+      create
+    );
+    this.read("/", readAll);
+    this.read("/:id", readById);
+    this.update(
+      "/:id",
+      passport.authenticate("admin", authRouter.optsForbidden),
+      updateById
+    );
+    this.destroy(
+      "/:id",
+      passport.authenticate("admin", authRouter.optsForbidden),
+      destroyById
+    );
+  };
+}
 
+const productsRouter = new ProductsRouter().getRouter(); 
 export default productsRouter;

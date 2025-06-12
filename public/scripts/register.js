@@ -1,29 +1,34 @@
-document.querySelector("#register").addEventListener("click", async () => {
-  try {
-    const data = {
-      first_name: document.querySelector("#first_name").Value,
-      last_name: document.querySelector("#last_name").Value,
-      age: document.querySelector("#age").value,
-      email: document.querySelector("#email").value,
-      password: document.querySelector("#password").value,
-    };
-    const opts = {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(data),
-    };
+document.getElementById("register-form").addEventListener("submit", async (e) => {
+  e.preventDefault(); // evita que el form recargue la página
 
-    const url = "api/auth/register";
-    let response = await fetch(url, opts);
-    response = await response.json();
-    //console.log(response);
-    if (response.error){
-        alert(response.error)
+  const form = e.target;
+  const data = {
+    first_name: form.first_name.value,
+    last_name: form.last_name.value,
+    age: form.age.value,
+    email: form.email.value,
+    password: form.password.value,
+  };
+
+  try {
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      // Si hubo error (ej: 400, 500)
+      alert(result.error || "Error en el registro");
     } else {
-        location.replace("/login");
+      // Registro exitoso
+      alert("Registro exitoso, redirigiendo...");
+      location.replace("/login"); // redirige a página principal
     }
   } catch (error) {
-    console.log(error);
-    alert(error.message);
+    alert("Error en la conexión: " + error.message);
   }
 });
+

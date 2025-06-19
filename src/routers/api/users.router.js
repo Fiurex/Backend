@@ -1,29 +1,20 @@
-import { Router } from "express";
+import RouterHelper from "../../helpers/router.helper.js";
 import passport from "../../middlewares/passport.mid.js";
-import { usersManager } from "../../data/managers/mongo/manager.mongo.js";
+import { updateUser, sendEmail } from "../../controllers/users.controller.js";
 
-const usersRouter = Router();
+// Instanciamos RouterHelper (extiende Router)
+const usersRouter = new RouterHelper();
 
-const updateUser = async (req, res, next) => {
-  try {
-    const data = req.body;
-    const { _id } = req.user;
-    const response = await usersManager.updateById(_id, data);
 
-    res.status(200).json({
-      response,
-      method: req.method,
-      url: req.originalUrl,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
-usersRouter.put(
+// Usamos el método `update` propio de RouterHelper
+usersRouter.update(
   "/",
   passport.authenticate("user", { session: false }),
   updateUser
 );
-
+usersRouter.read(
+  "/:email",
+  sendEmail,
+)
 export default usersRouter;

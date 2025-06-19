@@ -6,7 +6,7 @@
         title: { type: String, required: true, index: true },
         description: { type: String },
         category: { type: String, default: "laptops", enum: ["laptops", "smarthphones", "hardware", "electrodomesticos"] },
-        image: { type: String, default: "https://cdn.pixabay.com/photo/2017/01/10/23/52/artificial-intelligence-1969826_960_720.png" },
+        image: { type: String, default: "https://pixabay.com/vectors/package-packaging-pack-cardboard-4986026/" },
         price: { type: Number, default: 10 },
         stock: { type: Number, default: 10 },
         onsale: { type: Boolean, default: false },

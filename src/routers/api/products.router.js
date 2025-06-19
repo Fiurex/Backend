@@ -1,71 +1,8 @@
 import RouterHelper from "../../helpers/router.helper.js";
-import { productsManager } from "../../data/managers/mongo/manager.mongo.js";
-import passport from "passport";
-import authRouter from "./auth.router.js";
+import { create, readAll, readById, updateById, destroyById } from "../../controllers/product.controller.js";
 
-const create = async (req, res) => {
- 
-    const { method, originalUrl: url } = req;
-    const data = req.body;
-    data.owner_id = req.user._id;
-    const response = await productsManager.createOne(data);
-    res.status(201).json({ response, method, url });
 
-};
 
-const readAll = async (req, res) => {
- 
-    const { method, originalUrl: url } = req;
-    const filter = req.query;
-    const response = await productsManager.readAll(filter);
-    if (response.length === 0) {
-      const error = new Error("Not Found");
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({ response, method, url });
-};
-
-const readById = async (req, res) => {
-
-    const { method, originalUrl: url } = req;
-    const { id } = req.params;
-    const response = await productsManager.readById(id);
-    if (response.length === 0) {
-      const error = new Error("Not Found");
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({ response, method, url });
-};
-
-const updateById = async (req, res) => {
-
-    const { method, originalUrl: url } = req;
-    const { id } = req.params;
-    const data = req.body;
-    const response = await productsManager.updateById(id, data);
-    if (response.length === 0) {
-      const error = new Error("Not Found");
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({ response, method, url });
-  
-};
-
-const destroyById = async (req, res) => {
-    const { method, originalUrl: url } = req;
-    const { id } = req.params;
-    const response = await productsManager.destroyById(id);
-    if (response.length === 0) {
-      const error = new Error("Not Found");
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({ response, method, url });
-
-};
 
 class ProductsRouter extends RouterHelper {
   constructor() {
@@ -73,25 +10,13 @@ class ProductsRouter extends RouterHelper {
     this.init();
   }
   init = () => {
-    this.create(
-      "/",
-      passport.authenticate("admin", authRouter.optsForbidden),
-      create
-    );
-    this.read("/", readAll);
-    this.read("/:id", readById);
-    this.update(
-      "/:id",
-      passport.authenticate("admin", authRouter.optsForbidden),
-      updateById
-    );
-    this.destroy(
-      "/:id",
-      passport.authenticate("admin", authRouter.optsForbidden),
-      destroyById
-    );
+    this.create("/", ["ADMIN"], create);
+    this.read("/", ["PUBLIC"], readAll);
+    this.read("/:id", ["PUBLIC"], readById);
+    this.update("/:id", ["ADMIN"], updateById);
+    this.destroy("/:id", ["ADMIN"], destroyById);
   };
 }
 
-const productsRouter = new ProductsRouter().getRouter(); 
+const productsRouter = new ProductsRouter().getRouter();
 export default productsRouter;

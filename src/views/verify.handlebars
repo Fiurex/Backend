@@ -1,0 +1,36 @@
+<main class="d-flex flex-column align-items-center w-100 flex-grow-1 bg-dark text-light min-vh-100 py-5">
+  <h1 class="bg-success text-white p-3 text-center rounded w-100" style="max-width: 400px;">
+    VERIFY FORM
+  </h1>
+
+  <form 
+    class="mt-4 d-flex flex-column justify-content-evenly align-items-center bg-success-subtle p-4 rounded shadow" 
+    style="width: 100%; max-width: 400px;">
+    
+    <input 
+      class="form-control text-center my-2 bg-dark text-white border-success" 
+      type="text" 
+      name="email" 
+      id="email" 
+      value="{{email}}" 
+      disabled 
+    />
+    
+    <input 
+      class="form-control text-center my-2 border-success" 
+      type="text" 
+      name="code" 
+      id="code" 
+      placeholder="Enter verify code!" 
+    />
+    
+    <input 
+      class="btn btn-success w-100 mt-3" 
+      type="button" 
+      id="verify" 
+      value="Verify!" 
+    />
+  </form>
+</main>
+
+<script src="/scripts/verify.js"></script>

@@ -2,20 +2,18 @@ import passport from "passport";
 import { Strategy as Localstrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
 import { ExtractJwt, Strategy as jwtStrategy } from "passport-jwt";
-import { usersManager } from "../data/managers/mongo/manager.mongo.js";
-import { createHash, compareHash } from "../helpers/hash.helper.js";
+import { usersRepository } from "../repositories/repository.js";
+import { compareHash } from "../helpers/hash.helper.js";
 import { createToken } from "../helpers/token.helper.js";
+import verifyEmail from "../helpers/verifyemail.helper.js";
 
 const callbackURL = "http://localhost:8080/api/auth/google/redirect";
 
 passport.use(
-  //nombre de la estrategia de autenticacion/autorizacion
   "register",
-  //estrategia de autenticacion/autorizacion
   new Localstrategy(
-    //objeto de configuracion de la estrategia
     { passReqToCallback: true, usernameField: "email" },
-    //callback con la logica para resolver la estrategia
+
     async (req, email, password, done) => {
       try {
         if (!req.body.first_name) {
@@ -23,17 +21,13 @@ passport.use(
           error.statuscode = 400;
           throw error;
         }
-        let user = await usersManager.readBy({ email });
+        let user = await usersRepository.readBy({ email });
         if (user) {
-          //const error = new Error("Invalid credencial");
-          //error.statuscode = 401;
-          //throw error;
           done(null, null, { message: "Invalid Credentials", statusCode: 401 });
         }
-        req.body.password = createHash(req.body.password);
-        user = await usersManager.createOne(req.body);
-        /*el primer parametro de done es el error (si ocurre)
-          el segundo parametro son los datos del usuario que se guardan en el objeto de req, es decir apartir de que se aplica este middleware: existe req.user */
+
+        user = await usersRepository.create(req.body);
+        verifyEmail(user.email, user.verifyCode);
         done(null, user);
       } catch (error) {
         done(error);
@@ -48,7 +42,7 @@ passport.use(
     { passReqToCallback: true, usernameField: "email" },
     async (req, email, password, done) => {
       try {
-        let user = await usersManager.readBy({ email });
+        let user = await usersRepository.readBy({ email });
         if (!user) {
           const error = new Error("Invalid credentials");
           error.statusCode = 401;
@@ -58,8 +52,13 @@ passport.use(
         if (!verifyPass) {
           done(null, null, { message: "Invalid Credentials", statusCode: 401 });
         }
-        /*no necesito session porque trabajaremos con token */
-        /*crear token y enviarlo al cliente*/
+        const isVerified = user;
+        if (!isverified) {
+          return done(null, null, {
+            message: "Por favor verifica tu cuenta!",
+            statusCode: 401,
+          });
+        }
         const data = {
           user_id: user._id,
           email: user.email,
@@ -85,7 +84,7 @@ passport.use(
     async (jwtPayload, done) => {
       try {
         // Lo ideal es buscar por ID, que suele ser _id en Mongo:
-        const user = await usersManager.readBy({ _id: jwtPayload.user_id });
+        const user = await usersRepository.readBy({ _id: jwtPayload.user_id });
         if (!user) {
           // No lanzar error, usar done con null y false para indicar no autenticado
 
@@ -109,7 +108,7 @@ passport.use(
     async (data, done) => {
       try {
         const { user_id, email, role } = data;
-        const user = await usersManager.readBy({ _id, email, role });
+        const user = await usersRepository.readBy({ _id, email, role });
         if (!user || user.role !== "ADMIN") {
           done(null, null, { message: "Forbidden", statusCode: 401 });
         }
@@ -139,15 +138,15 @@ passport.use(
         if (!email)
           return done(new Error("Email no encontrado en perfil de Google"));
 
-        let user = await usersManager.readBy({ email });
+        let user = await usersRepository.readBy({ email });
 
         if (!user) {
-          user = await usersManager.createOne({
+          user = await usersRepository.createOne({
             email,
             first_name,
             last_name,
             avatar,
-            password: createHash(email),
+            password: email,
             fromGoogle: true,
           });
         }

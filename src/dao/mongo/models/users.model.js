@@ -12,8 +12,12 @@ const schema = new Schema(
   age:        { type: Number, required: true },
   password:   { type: String, required: true },
   cart:       { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
-  role:       { type: String, default: "user" }
-});
+  role:       { type: String, default: "user" },
+  isVerify:   {type: Boolean, default:false},
+  verifyCode: {type: String}
+},
+{timestamps:true}
+);
 
 const User = model(collection, schema);
 export default User
